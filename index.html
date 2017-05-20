@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style>
+			html,
+			body {
+				margin: 0px;
+				padding: 0px;
+				height: 100%;
+				width: 100%;
+			}
+			
+			canvas {
+				width: 100%;
+				height: 100%
+			}
+		</style>
+		<script src="js/three.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/Tween.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<script>
+			function getRandomColor() {
+				var r = 255 * Math.random() | 0,
+					g = 255 * Math.random() | 0,
+					b = 255 * Math.random() | 0;
+				// return 'rgb(' + r + ',' + g + ',' + b + ')';
+				return '0x' + parseInt(r, 16) + parseInt(g, 16) + parseInt(b, 16);
+			}
+
+			function particleRender(context) {
+				context.beginPath();
+				context.arc(0, 0, 1, 0, 2 * Math.PI, true);
+				context.fill();
+			}
+
+			var project = {
+				scene: null,
+				camera: null,
+				renderer: null,
+				objects: {},
+				init: function(font) {
+					this.scene = new THREE.Scene();
+					this.camera = new THREE.PerspectiveCamera(85, window.innerWidth / window.innerHeight, 0.1, 500);
+					this.renderer = new THREE.WebGLRenderer();
+					this.renderer.setSize(window.innerWidth, window.innerHeight);
+					document.body.appendChild(this.renderer.domElement);
+					this.create(font);
+				},
+				create: function(font) {
+					this.objects.particles = [];
+					// 将z坐标从-1000（最远处）逐步增加至1000（相机所在处）
+					// 每一个位置加入一个随机的粒子
+					for (var zpos = -1000; zpos < 1000; zpos += 2) {
+
+						// 创建一个粒子材质，向其传入颜色及我们定义的粒子渲染函数
+			
+						var geometry = new THREE.CircleGeometry( 1, 32 );
+                        var material = new THREE.MeshBasicMaterial( { color: getRandomColor() } );
+
+						// 创建粒子
+						var particle = new THREE.Mesh( geometry, material );
+
+						// 赋给它一个位于-500至500之间的随机x和y值
+						particle.position.x = Math.random() * 1000 - 500;
+						particle.position.y = Math.random() * 1000 - 500;
+
+						particle.position.z = zpos-1000;
+
+						// 将其放大一点
+						particle.scale.x = particle.scale.y = 1;
+
+						// 把它加入到场景中
+						this.scene.add(particle);
+
+						// 将粒子加入到我们的particles数组中   
+						this.objects.particles.push(particle);
+					}
+
+					var light = new THREE.AmbientLight(0xffffff);
+					this.scene.add(light);
+
+					var g = new THREE.TextGeometry("in this time", {
+						// 设定文字字体，
+						font: font,
+						//尺寸
+						size: 5,
+						//厚度
+						height: 0.1,
+					});
+					//计算边界，暂时不用管
+					g.computeBoundingBox();
+					g.center()
+						//3D文字材质
+					var m = new THREE.MeshBasicMaterial({
+						color: 0xff0000
+					});
+					this.objects.textTime = new THREE.Mesh(g, m);
+					this.scene.add(this.objects.textTime);
+
+					var g2 = new THREE.TextGeometry("I Love You", {
+						// 设定文字字体，
+						font: font,
+						//尺寸
+						size: 5,
+						//厚度
+						height: 0.1,
+					});
+					//计算边界，暂时不用管
+					g2.computeBoundingBox();
+					g2.center()
+						//3D文字材质	
+					var m2 = new THREE.MeshBasicMaterial({
+						color: 0xff0000
+					});
+					this.objects.textTime2 = new THREE.Mesh(g2, m2);
+					this.scene.add(this.objects.textTime2);
+
+					var g1 = new THREE.TextGeometry("I want say to you", {
+						// 设定文字字体，
+						font: font,
+						//尺寸
+						size: 5,
+						//厚度
+						height: 0.1,
+					});
+					//计算边界，暂时不用管
+					g1.computeBoundingBox();
+					g1.center()
+						//3D文字材质	
+					var m1 = new THREE.MeshBasicMaterial({
+						color: 0xff0000
+					});
+					this.objects.textTime1 = new THREE.Mesh(g1, m1);
+					this.scene.add(this.objects.textTime1);
+
+					this.camera.position.z = 50;
+
+					this.objects.textTime.position.x = window.innerWidth;
+					var t1 = new TWEEN.Tween(this.objects.textTime.position)
+						.to({
+							x: 0,
+							z: 4
+						}, 2000)
+						.easing(TWEEN.Easing.Quadratic.Out);
+
+					var t2 = new TWEEN.Tween(this.objects.textTime.position)
+						.to({
+							x: -window.innerWidth,
+							z: 0
+						}, 2000).delay(1000)
+						.easing(TWEEN.Easing.Quadratic.In);
+
+					this.objects.textTime1.position.x = window.innerWidth;
+					var t3 = new TWEEN.Tween(this.objects.textTime1.position)
+						.to({
+							x: 0,
+							z: 4
+						}, 2000)
+						.easing(TWEEN.Easing.Quadratic.Out);
+
+					var t4 = new TWEEN.Tween(this.objects.textTime1.position)
+						.to({
+							x: -window.innerWidth,
+							z: 0
+						}, 2000).delay(1000)
+						.easing(TWEEN.Easing.Quadratic.In);
+
+					this.objects.textTime2.position.x = window.innerWidth;
+					var t5 = new TWEEN.Tween(this.objects.textTime2.position)
+						.to({
+							x: 0,
+							z: 4
+						}, 2000)
+						.easing(TWEEN.Easing.Quadratic.Out);
+
+					var t6 = new TWEEN.Tween(this.objects.textTime2.position)
+						.to({
+							x: -window.innerWidth,
+							z: 0
+						}, 2000).delay(1000)
+						.easing(TWEEN.Easing.Quadratic.In);
+
+					//t5.chain(t6);
+					t4.chain(t5);
+					t3.chain(t4);
+					t2.chain(t3);
+					t1.chain(t2).start();
+
+					//          		new TWEEN.Tween( this.objects.textTime.position)
+					//          		.to( { x: -window.innerWidth ,z:0}, 2000 ).delay(3000).repeat(0).easing(TWEEN.Easing.Quadratic.Out).start();
+					//this.camera.position.set(0,2,50);
+					//this.camera.position.y = -5;
+					//this.camera.lookAt(0,0,0);
+				},
+				update: function() {
+
+					// 对每个粒子进行迭代处理
+					for (var i = 0; i < this.objects.particles.length; i++) {
+						particle = this.objects.particles[i];
+
+						// 根据mouseY值进行移动
+						particle.position.z +=   0.8;
+
+						// 如果粒子过近，将其移至后面
+						if (particle.position.z > 1000)
+							particle.position.z -= 2000;
+					}
+
+					TWEEN.update();
+					//this.objects.textTime.rotation.y += 0.1;
+				},
+				render: function() {
+					this.update();
+					this.renderer.render(this.scene, this.camera);
+				}
+
+			}
+
+			function loopRender() {
+				project.render();
+				requestAnimationFrame(loopRender);
+			}
+
+			var loader = new THREE.FontLoader();
+			loader.load('./fonts/helvetiker_bold.typeface.json', function(font) {
+				project.init(font);
+				loopRender();
+			});
+
+			//loopRender();
+		</script>
+
+	</body>
+
+</html>
